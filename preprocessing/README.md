@@ -39,7 +39,7 @@ Before starting, please make sure that the root directory is visible by the inte
 export PYTHONPATH=root_path:$PYTHONPATH
 ```
 
-From the root directory execute the following command (reverse the formatting).
+From the root directory execute the following command (undo the formatting).
 
 ```
 python -m luigi
