@@ -1,0 +1,11 @@
+.idea/
+__pycache__/
+*.pyc
+smoke_tests/
+.DS_Store
+build/
+dist/
+*.egg-info
+runs/
+data/
+docs/
