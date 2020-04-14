@@ -1,6 +1,6 @@
 # Unsupervised Opinion Summarization as Copycat-Review Generation
 
-This repository contains the Python (PyTorch) codebase of [corresponding paper](https://arxiv.org/abs/1911.02247
+This repository contains the Python (PyTorch) codebase of [the corresponding paper](https://arxiv.org/abs/1911.02247
 ) accepted at ACL 2020, Seattle, USA.
 
 

@@ -1,0 +1,19 @@
+{
+  "UK": {
+    "1": {
+      "product_id": [11, 12, 13],
+      "sales": [0, 1, 2]
+    }
+  },
+  "DK": {
+    "2": {
+      "product_id": [101],
+      "sales": [5]
+    },
+    "3": {
+      "product_id": [101],
+      "sales": [6]
+    }
+  },
+  "<GROUPING_FNAMES>" : ["country", "shop_id"]
+}

@@ -1,0 +1,7 @@
+[
+  {"country": "UK", "shop_id": "1", "product_id": 11, "sales": 0},
+  {"country": "UK", "shop_id": "1", "product_id": 12, "sales": 1},
+  {"country": "UK", "shop_id": "1", "product_id": 13, "sales": 2},
+  {"country": "DK", "shop_id": "2", "product_id": 101, "sales": 5},
+  {"country": "DK", "shop_id": "3", "product_id": 101, "sales": 6}
+]
