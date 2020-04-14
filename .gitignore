@@ -7,5 +7,5 @@ build/
 dist/
 *.egg-info
 runs/
-data/
+/data
 docs/
