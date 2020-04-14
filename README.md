@@ -20,7 +20,7 @@ Example summaries produced by the system are shown below.
 * *This is the best steamer I have ever owned. It is easy to use and easy to clean. I have used it several times and it works great. I would recommend it to anyone looking for a steamer.*
 
 
-For more examples, please refer to the [artifacts folder](copycat/artifacts/yelp/summs).
+For more examples, please refer to the [artifacts folder](copycat/artifacts/).
 
 ## Installation
 
