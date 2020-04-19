@@ -13,12 +13,14 @@ logger = getLogger(logger_name)
 class ICopyCat(ITorchModel):
     """Model interface. Contains a custom method for summary generation."""
 
-    def __init__(self, beamer, **kwargs):
+    def __init__(self, beamer, min_gen_seq_len=None, **kwargs):
         """
         :param beamer: beam search object for sequence generation.
+        :param min_gen_seq_len: minimum length of generated reviews and summaries.
         """
         super(ICopyCat, self).__init__(**kwargs)
         self.beamer = beamer
+        self.min_sen_seq_len = min_gen_seq_len
 
     def predict(self, batch, **kwargs):
         """Predicts summaries and reviews."""
@@ -34,7 +36,6 @@ class ICopyCat(ITorchModel):
 
         bs = revs.size(0)
         max_rev_len = revs.size(1)
-        min_len = 20
         summs_nr = summ_rev_indxs.size(0)
 
         with T.no_grad():
@@ -60,13 +61,16 @@ class ICopyCat(ITorchModel):
                                                                summ_rev_indxs_mask)
 
             # DECODING OF SUMMARIES #
-
+            if self.min_sen_seq_len is not None:
+                min_lens = [self.min_sen_seq_len] * summs_nr
+            else:
+                min_lens = None
             z_mu_p, z_sigma_p = self.model.get_p_z_mu_sigma(c_mu_q)
 
             init_summ_dec_state = DecState(rec_vals={"hidden": z_mu_p})
             summ_word_ids, \
             summ_coll_vals = self.beamer(init_summ_dec_state,
-                                         min_lens=[min_len] * summs_nr,
+                                         min_lens=min_lens,
                                          max_steps=max_rev_len,
                                          att_keys=summ_att_keys,
                                          att_values=summ_att_vals,
@@ -90,9 +94,15 @@ class ICopyCat(ITorchModel):
                                                      att_indxs_mask=other_revs_mask)
 
             rev_att_word_ids = revs[other_revs].view(bs, -1)
+            if self.min_sen_seq_len is not None:
+                min_lens = [self.min_sen_seq_len] * bs
+            else:
+                min_lens = None
+
             init_rev_dec_state = DecState(rec_vals={"hidden": z_mu_q})
             rev_word_ids, \
             rev_coll_vals = self.beamer(init_rev_dec_state,
+                                        min_lens=min_lens,
                                         max_steps=max_rev_len,
                                         att_keys=rev_att_keys,
                                         att_values=rev_att_vals,

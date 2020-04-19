@@ -115,7 +115,7 @@ beamer = Beamer(model.decode_beam,
                 block_consecutive=run_hp.block_consecutive)
 
 imodel = IModel(model=model, grads_clip=run_hp.grads_clip,
-                device=run_hp.device,
+                device=run_hp.device, min_gen_seq_len=run_hp.min_gen_seq_len,
                 learning_rate=run_hp.learning_rate, beamer=beamer)
 
 idev = IDev(imodel=imodel, train_data_pipeline=train_pipeline,

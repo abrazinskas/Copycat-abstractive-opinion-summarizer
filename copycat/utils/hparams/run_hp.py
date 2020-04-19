@@ -71,6 +71,7 @@ class RunHP(BaseHP):
         self.ngram_mirror_window = 3  # or None
         self.mirror_conjs = ["and", 'or', ',', 'but']  # or None
         self.block_consecutive = True
+        self.min_gen_seq_len = 20
 
         #   POST-PROCESSING AND ANALYTICS #
         mt = MosesTokenizer()
