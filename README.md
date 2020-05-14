@@ -123,13 +123,11 @@ MIT
 
 ## Citation
 
-(will be updated soon)
-
 ```
-@article{bravzinskas2019unsupervised,
-  title={Unsupervised Multi-Document Opinion Summarization as Copycat-Review Generation},
+@inproceedings{brazinskas2020unsupervised,
+  title={Unsupervised Opinion Summarization as Copycat-Review Generation},
   author={Bra{\v{z}}inskas, Arthur and Lapata, Mirella and Titov, Ivan},
-  journal={arXiv preprint arXiv:1911.02247},
-  year={2019}
+ booktitle={Proceedings of Association for Computational Linguistics (ACL)},
+  year={2020}
 }
 ```
