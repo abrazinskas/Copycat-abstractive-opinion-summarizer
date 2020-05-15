@@ -46,18 +46,6 @@ Add the root directory to the path.
 export PYTHONPATH=root_path:$PYTHONPATH
 ```
 
-### Notes
-
-* Minor deviations from the published results are expected as the code was migrated from a bleeding-edge PyTorch version and Python 2.7.
-
-* Post factum, we added a **beam search generator** that has the **n-gram blocking functionality** (based on OpenNMT). The enhancement allows for a repetition reduction.
-
-* The setup was fully tested with **Python 3.6.9**.
-
-* The model work on a single GPU only.
-
-* **mltoolkit** provides the backbone functionality for data processing and modelling. Make sure it's visible to the interpreter.
-
 ## Data
 
 Our model is trained on two different collections of customer reviews - [Amazon](https://cseweb.ucsd.edu/~jmcauley/datasets.html) and [Yelp](https://www.yelp.nl/dataset/challenge). The evaluation was performed on human-annotated summaries based on both datasets.
@@ -79,7 +67,8 @@ The rating column is optional as it is not used by the model.
 
 ### Evaluation Summaries
 
-Evaluation can be performed on human-created summaries, both [Amazon](https://github.com/ixlan/CopyCat-abstractive-Amazon-product-summaries) and [Yelp](https://github.com/sosuperic/MeanSum) summaries are publicly available. No preprocessing is needed for evaluation.
+Evaluation can be performed on human-created summaries, both [Amazon](gold_summs/) and [Yelp](https://github.com/sosuperic/MeanSum) summaries are publicly available. No preprocessing is needed for evaluation.
+The Amazon summaries were created by us using the Mechanical Turk Platform, more information on the process can be found in the corresponding folder.
 
 ## Running
 
@@ -131,3 +120,16 @@ MIT
   year={2020}
 }
 ```
+
+
+## Notes
+
+* Minor deviations from the published results are expected as the code was migrated from a bleeding-edge PyTorch version and Python 2.7.
+
+* Post factum, we added a **beam search generator** that has the **n-gram blocking functionality** (based on OpenNMT). The enhancement allows for a repetition reduction.
+
+* The setup was fully tested with **Python 3.6.9**.
+
+* The model work on a single GPU only.
+
+* **mltoolkit** provides the backbone functionality for data processing and modelling. Make sure it's visible to the interpreter.
