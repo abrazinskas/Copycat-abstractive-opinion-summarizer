@@ -9,8 +9,6 @@ For annotation, we selected reviews that were written in English and were at lea
 * Home and Kitchen
 * Personal Care
 
-If you find the dataset useful, please cite the paper.
-
 ## Summary Examples
 
 > These transition tights are perfect for children sensitive to the tight sensation other tights have around the foot.  The material is soft and durable; they stand up well to both the rough nature of children, and the washing machine.  This product does tend to run slightly small, so purchasing one size up is recommended.
