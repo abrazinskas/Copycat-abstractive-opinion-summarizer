@@ -1,4 +1,4 @@
-# Amazon Product Reviews Abstractive summaries
+# Amazon Product Reviews Abstractive Summaries
 
 In total, the dataset consists of 60 annotated products from the 4 categories listed below (15 per each). Each product has 3 summaries written by different professional human annotators.
 For annotation, we selected reviews that were written in English and were at least 45 words long. We also assured diversity of summaries by not allowing more than 10 submissions per annotator.
