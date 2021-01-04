@@ -15,10 +15,10 @@ class RunHP(BaseHP):
 
         #   GENERAL  #
         self.seed = 42
-        self.cuda_device_id = 6
+        self.cuda_device_id = 0
         self.device = 'cuda'  # 'cuda' or 'cpu'
-        self.training_logging_step = 50  # how often to print internal metrics
-        self.epochs = 10  # if set to 0 will immediately just to evaluation
+        self.training_logging_step = 50  # that often to print internal metrics
+        self.epochs = 10  # if set to 0 will only perform evaluation
         self.learning_rate = 0.0005
         self.grads_clip = 0.25
 
