@@ -93,7 +93,7 @@ python copycat/scripts/train_truecaser.py --data_path=your_data_path --tcaser_fp
 
 One needs to set parameters of the workflow in `copycat/hparams/run_hp.py`. E.g., by altering data paths or specifying the number of training epochs.
 
-The file `run_copycat.py` contains a workflow of operations that are executed to prepare necessary objects (e.g., beam search) and then run a training and/or evaluation procedure.
+The file `run_workflow.py` contains a workflow of operations that are executed to prepare necessary objects (e.g., beam search) and then run a training and/or evaluation procedure.
 After adjusting run parameters, execute the following command.
 
 ```
