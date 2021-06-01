@@ -54,7 +54,7 @@ Our model is trained on two different collections of customer reviews - [Amazon]
 
 The dataset for [Yelp](https://abrazinskas.s3-eu-west-1.amazonaws.com/downloads/projects/copycat/data/yelp.zip) and [Amazon](https://abrazinskas.s3-eu-west-1.amazonaws.com/downloads/projects/copycat/data/amazon.zip) can be downloaded and put to the `/data` folder with amazon and yelp folders. 
 
-If one needs to preprocess data from raw files, both Amazon and Yelp raw files, please refer to [provided preprocessing scripts](preprocessing/)
+If one needs to preprocess data from raw files, please refer to [provided preprocessing scripts](preprocessing/)
 
 ### Input Data Format
 
@@ -106,7 +106,7 @@ python copycat/scripts/run_workflow.py
 ### Summary generation
 
 Generation of summaries from CSV files can also be done via the `run_workflow.py` file. The input must be in the CSV format as in `copycat/amazon/data/infer_input.csv`.
-Each review column must be in the format 'rev1', ..., 'revN'.
+Each review column must be in the format 'rev1', ..., 'revN'. Tab should be used as a separator.
 
 ```
 python copycat/scripts/run_workflow.py --infer-input-file-path=your_csv_input_file_path --infer-batch-size=20
@@ -155,4 +155,4 @@ MIT
 
 * **mltoolkit** provides the backbone functionality for data processing and modelling. Make sure it's visible to the interpreter.
 
-* We improved unsupervised data preprocessing, and thus the data statistics differ a bit from the ones mentioned in the paper.
+* We improved unsupervised data preprocessing, and thus the data statistics differ slightly from the ones mentioned in the paper.
