@@ -69,7 +69,11 @@ def read_amazon_data(path, max_revs=None, replace_xml=False):
     dus = []
     prev_prod_id = None
     for indx, du in enumerate(parse(path)):
+        if any((du_key not in du for du_key in amazon_to_output_map.keys())):
+            continue
+
         prod_id = du[AmazonFields.PROD_ID]
+
         if replace_xml:
             du[AmazonFields.REV_TEXT] = unescape(du[AmazonFields.REV_TEXT])
         du = {amazon_to_output_map[attr]: du[attr] for attr

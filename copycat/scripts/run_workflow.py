@@ -1,18 +1,19 @@
 # this file contains a workflow that creates necessary objects and executes
 # methods for training and evaluation.
 from copycat.data_pipelines.assemblers import assemble_train_pipeline, \
-    assemble_eval_pipeline, assemble_vocab_pipeline
+    assemble_eval_pipeline, assemble_vocab_pipeline, assemble_infer_pipeline
 from mltoolkit.mldp.utils.tools import Vocabulary
 from mltoolkit.mldp.utils.constants.vocabulary import START, END, PAD
 from mltoolkit.mlutils.helpers.logging import init_logger, DEBUG, INFO
-from mltoolkit.mlutils.helpers.paths_and_files import comb_paths
+from mltoolkit.mlutils.helpers.paths_and_files import comb_paths, get_file_name
 from copycat.modelling.interfaces import IDevCopyCat as IDev, ICopyCat as IModel
 from copycat.modelling import CopyCat as Model
 from mltoolkit.mlmo.generation import Beamer
 from copycat.utils.fields import InpDataF
 from torch.nn.init import xavier_uniform_, normal_
 from mltoolkit.mlutils.helpers.formatting.general import format_big_box
-from copycat.utils.helpers.run import gen_seqs, summ_eval
+from copycat.utils.helpers.run import gen_seqs, summ_eval, gen_summs
+from copycat.utils.helpers.io import get_rev_number
 from time import time
 from torch import manual_seed
 from functools import partial
@@ -22,6 +23,18 @@ from mltoolkit.mlmo.utils.tools.annealing import KlCycAnnealing
 from copycat.utils.hparams import ModelHP, RunHP
 from copycat.utils.tools import SeqPostProcessor
 from copycat.utils.constants import VOCAB_DEFAULT_SYMBOLS
+from argparse import ArgumentParser
+
+
+#   PARSER   #
+
+parser = ArgumentParser()
+parser.add_argument('--infer-input-file-path', type=str,
+                    help="CSV file with data for inference.")
+parser.add_argument('--infer-batch-size', type=int, default=10,
+                    help='The batch size used in inference.')
+
+parser_args = parser.parse_args()
 
 model_hp = ModelHP()
 run_hp = RunHP()
@@ -44,7 +57,6 @@ gen_data_sources = [
 ]
 
 os.environ['CUDA_VISIBLE_DEVICES'] = str(run_hp.cuda_device_id)
-experiments_descr = 'My first experiment with the model.'
 
 logger = init_logger(logger_name="", level=INFO,
                      output_path=comb_paths(run_hp.output_path, "log.txt"))
@@ -90,6 +102,7 @@ eval_data_pipeline = assemble_eval_pipeline(word_vocab,
                                             tokenization_func=run_hp.tok_func,
                                             max_groups_per_chunk=run_hp.eval_max_groups_per_batch)
 
+
 #   MODEL AND INTERFACES INITIALIZATION   #
 
 summ_post_proc = SeqPostProcessor(tokenizer=lambda x: x.split(),
@@ -133,7 +146,7 @@ else:
     imodel.init_weights(multi_dim_init_func=xavier_uniform_,
                         single_dim_init_func=lambda x: normal_(x, std=0.1))
 
-idev.save_setup_str(run_hp.output_path, experiments_descr)
+idev.save_setup_str(run_hp.output_path, run_hp.experiments_descr)
 
 # logging and saving hyper-params
 logger.info(format_big_box(str(run_hp)))
@@ -145,54 +158,79 @@ model_hp.save(comb_paths(run_hp.output_path, 'model_hp.json'))
 
 #   TRAINING PROCEDURE  #
 
-if run_hp.epochs > 0:
-    gen_func = partial(idev.gen_and_save_summs, beam_size=run_hp.beam_size)
+if parser_args.infer_input_file_path is None:
+    if run_hp.epochs > 0:
+        gen_func = partial(idev.gen_and_save_summs, beam_size=run_hp.beam_size)
+
+        def after_ep_func(epoch):
+            out_fp = comb_paths(run_hp.output_path,
+                                'ep%d_%s' % (epoch, run_hp.checkpoint_full_fn))
+            imodel.save_state(out_fp)
+
+            gen_folder_path = comb_paths(run_hp.output_path,
+                                         "output_ep%d" % epoch)
+            summ_eval(output_folder=gen_folder_path,
+                      data_pipeline=eval_data_pipeline,
+                      eval_data_source=eval_dev_data_source,
+                      summ_gen_func=partial(idev.summ_generator,
+                                            summ_post_proc=summ_post_proc),
+                      rev_formatter_func=idev.format_revs,
+                      avg_rouge=True,
+                      sent_splitter=run_hp.sent_split_func,
+                      analytics_func=run_hp.analytics_func)
+            gen_seqs(data_sources=gen_data_sources,
+                     output_folder=gen_folder_path,
+                     gen_func=partial(idev.gen_and_save_summs))
 
 
-    def after_ep_func(epoch):
-        out_fp = comb_paths(run_hp.output_path,
-                            'ep%d_%s' % (epoch, run_hp.checkpoint_full_fn))
-        imodel.save_state(out_fp)
+        start = time()
+        idev.standard_workflow(train_data_source=train_data_source,
+                               val_data_source=val_data_source,
+                               logging_period=run_hp.training_logging_step,
+                               epochs=run_hp.epochs,
+                               after_epoch_func=after_ep_func)
+        logger.info("Total time elapsed %f (s) " % (time() - start))
 
-        gen_folder_path = comb_paths(run_hp.output_path,
-                                     "output_ep%d" % epoch)
-        summ_eval(output_folder=gen_folder_path,
-                  data_pipeline=eval_data_pipeline,
-                  eval_data_source=eval_dev_data_source,
-                  summ_gen_func=partial(idev.summ_generator,
-                                        summ_post_proc=summ_post_proc),
-                  rev_formatter_func=idev.format_revs,
-                  avg_rouge=True,
-                  sent_splitter=run_hp.sent_split_func,
-                  analytics_func=run_hp.analytics_func)
-        gen_seqs(data_sources=gen_data_sources,
-                 output_folder=gen_folder_path,
-                 gen_func=partial(idev.gen_and_save_summs))
+        imodel.save_state(comb_paths(run_hp.output_path,
+                                     run_hp.checkpoint_full_fn))
 
+    #   AFTER TRAINING PROCEDURES   #
 
-    start = time()
-    idev.standard_workflow(train_data_source=train_data_source,
-                           val_data_source=val_data_source,
-                           logging_period=run_hp.training_logging_step,
-                           epochs=run_hp.epochs,
-                           after_epoch_func=after_ep_func)
-    logger.info("Total time elapsed %f (s) " % (time() - start))
+    gen_folder_path = comb_paths(run_hp.output_path, "output")
 
-    imodel.save_state(comb_paths(run_hp.output_path,
-                                 run_hp.checkpoint_full_fn))
+    summ_eval(output_folder=gen_folder_path, eval_data_source=eval_test_data_source,
+              summ_gen_func=partial(idev.summ_generator,
+                                    summ_post_proc=summ_post_proc),
+              data_pipeline=eval_data_pipeline,
+              rev_formatter_func=idev.format_revs,
+              avg_rouge=True,
+              sent_splitter=run_hp.sent_split_func,
+              analytics_func=run_hp.analytics_func)
 
-#   AFTER TRAINING PROCEDURES   #
+    gen_seqs(data_sources=gen_data_sources, output_folder=gen_folder_path,
+             gen_func=partial(idev.gen_and_save_summs))
+else:
+    # inference procedure where summaries are generated for reviews in CSV
+    # files
+    infer_bsz = parser_args.infer_batch_size
+    infer_inp_file_path = parser_args.infer_input_file_path
+    out_file_name = get_file_name(infer_inp_file_path)
+    infer_out_file_path = comb_paths(run_hp.output_path,
+                                     f'{out_file_name}.out.txt')
 
-gen_folder_path = comb_paths(run_hp.output_path, "output")
+    assert infer_inp_file_path is not None
+    rev_num = get_rev_number(infer_inp_file_path)
 
-summ_eval(output_folder=gen_folder_path, eval_data_source=eval_test_data_source,
-          summ_gen_func=partial(idev.summ_generator,
-                                summ_post_proc=summ_post_proc),
-          data_pipeline=eval_data_pipeline,
-          rev_formatter_func=idev.format_revs,
-          avg_rouge=True,
-          sent_splitter=run_hp.sent_split_func,
-          analytics_func=run_hp.analytics_func)
+    logger.info("Performing inference/summary generation")
+    infer_data_pipeline = assemble_infer_pipeline(word_vocab, max_reviews=rev_num,
+                                                  tokenization_func=run_hp.tok_func,
+                                                  max_groups_per_chunk=infer_bsz)
+    summ_pproc = SeqPostProcessor(tokenizer=lambda x: x.split(),
+                                  detokenizer=run_hp.detok_func,
+                                  tcaser=run_hp.true_case_func)
 
-gen_seqs(data_sources=gen_data_sources, output_folder=gen_folder_path,
-         gen_func=partial(idev.gen_and_save_summs))
+    logger.info(f"Saving summaries to: '{infer_out_file_path}'")
+    gen_summs(infer_data_pipeline.iter(data_path=infer_inp_file_path),
+              output_file_path=infer_out_file_path,
+              summ_gen_func=partial(idev.summ_generator,
+                                    summ_post_proc=summ_post_proc))

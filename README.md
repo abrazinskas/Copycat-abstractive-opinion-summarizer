@@ -50,9 +50,11 @@ export PYTHONPATH=root_path:$PYTHONPATH
 
 Our model is trained on two different collections of customer reviews - [Amazon](https://cseweb.ucsd.edu/~jmcauley/datasets.html) and [Yelp](https://www.yelp.nl/dataset/challenge). The evaluation was performed on human-annotated summaries based on both datasets.
 
-### Preprocessing of Unsupervised Data
-To train the model, one needs to download the datasets from the official websites. Both are publicly available, free of charge.
-The model expects a certain format of input, which can be obtained by preprocessing the downloaded data using the [provided preprocessing scripts](preprocessing/).
+### Unsupervised data
+
+The dataset for [Yelp](https://abrazinskas.s3-eu-west-1.amazonaws.com/downloads/projects/copycat/data/yelp.zip) and [Amazon](https://abrazinskas.s3-eu-west-1.amazonaws.com/downloads/projects/copycat/data/amazon.zip) can be downloaded and put to the `/data` folder with amazon and yelp folders. 
+
+If one needs to preprocess data from raw files, both Amazon and Yelp raw files, please refer to [provided preprocessing scripts](preprocessing/)
 
 ### Input Data Format
 
@@ -101,6 +103,17 @@ python copycat/scripts/run_workflow.py
 ```
 
 
+### Summary generation
+
+Generation of summaries from CSV files can also be done via the `run_workflow.py` file. The input must be in the CSV format as in `copycat/amazon/data/infer_input.csv`.
+Each review column must be in the format 'rev1', ..., 'revN'.
+
+```
+python copycat/scripts/run_workflow.py --infer-input-file-path=your_csv_input_file_path --infer-batch-size=20
+```
+
+
+
 ### Checkpoints
 
 [Amazon](https://drive.google.com/open?id=143BhjMPL5vdNdjk0-duAz4LBB7FBVhXx) and [Yelp](https://drive.google.com/open?id=1wy8lpokZqf3KygQQJTLrPVT7q6Ok3Hgr) checkpoints are available for download. Please put them to `copycat/artifacts/`, to the corresponding dataset sub-folders.
@@ -134,10 +147,12 @@ MIT
 
 * Minor deviations from the published results are expected as the code was migrated from a bleeding-edge PyTorch version and Python 2.7.
 
-* Post factum, we added a **beam search generator** that has the **n-gram blocking functionality** (based on OpenNMT). The enhancement allows for a repetition reduction.
+* Post factum, we added a **beam search generator** that has the **n-gram blocking functionality** (based on OpenNMT). The enhancement reduces repetitions.
 
 * The setup was fully tested with **Python 3.6.9**.
 
 * The model work on a single GPU only.
 
 * **mltoolkit** provides the backbone functionality for data processing and modelling. Make sure it's visible to the interpreter.
+
+* We improved unsupervised data preprocessing, and thus the data statistics differ a bit from the ones mentioned in the paper.

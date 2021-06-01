@@ -1,6 +1,6 @@
 import unittest
-from mltoolkit.mlmo.eval.metrics import GoogleRouge
-from mltoolkit.mlmo.eval.metrics.google_rouge.rouge_scorer import RougeScorer
+from copycat.eval.metrics import GoogleRouge
+from copycat.eval.metrics.google_rouge.rouge_scorer import RougeScorer
 from numpy import isclose
 
 

@@ -219,8 +219,7 @@ class IDevCopyCat(BaseIDev):
 
     def summ_generator(self, batch, summ_post_proc=None):
         """
-        Inputs a batch and returns a list of tokens of a summary.
-        This method is used for summary evaluation.
+        Inputs a batch and returns a list of tokens of generated summaries.
 
         :return: list of strings.
         """
@@ -228,7 +227,8 @@ class IDevCopyCat(BaseIDev):
         end_id = self.word_vocab[END].id
         pad_id = self.word_vocab[PAD].id
 
-        _, _, summs_word_ids, _ = self.imodel.predict(batch)
+        summs_word_ids = self.imodel.generate_summaries(batch)
+
         summs_word_ids = format_seqs(summs_word_ids, start_id=start_id,
                                      end_id=end_id, pad_id=pad_id,
                                      append_end=False)

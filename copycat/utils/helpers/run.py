@@ -37,3 +37,13 @@ def summ_eval(output_folder, data_pipeline, eval_data_source, summ_gen_func,
                              revs_formatter_func=rev_formatter_func,
                              analytics_func=analytics_func)
     eval_proc.eval(eval_data_source, output_file_path=output_path)
+
+
+def gen_summs(data_iter, output_file_path, summ_gen_func):
+    """Generates summaries and saves them to a txt file. Order is preserved"""
+    out_file = open(output_file_path, encoding='utf-8', mode='w')
+    for batch in data_iter:
+        summs = summ_gen_func(batch)
+        for summ in summs:
+            out_file.write(summ + '\n')
+    out_file.close()

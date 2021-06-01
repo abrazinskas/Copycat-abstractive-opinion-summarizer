@@ -13,6 +13,8 @@ class RunHP(BaseHP):
     def __init__(self):
         super(RunHP, self).__init__()
 
+        self.experiments_descr = 'My first experiment with the model.'
+
         #   GENERAL  #
         self.seed = 42
         self.cuda_device_id = 0
@@ -31,8 +33,9 @@ class RunHP(BaseHP):
 
         #   DATA SOURCES  #
         # `early_term` limits the number of chunks per epoch
+        # set it to ``None`` to validate on the full set
         self.train_early_term = None
-        self.val_early_term = None
+        self.val_early_term = 500
         self.gener_early_term = 2
 
         #  GENERAL PATHS   #
