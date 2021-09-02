@@ -52,9 +52,7 @@ Our model is trained on two different collections of customer reviews - [Amazon]
 
 ### Unsupervised data
 
-The dataset for [Yelp](https://abrazinskas.s3-eu-west-1.amazonaws.com/downloads/projects/copycat/data/yelp.zip) and [Amazon](https://abrazinskas.s3-eu-west-1.amazonaws.com/downloads/projects/copycat/data/amazon.zip) can be downloaded and put to the `/data` folder with amazon and yelp folders. See notes below.
-
-If one needs to preprocess data from raw files, please refer to [provided preprocessing scripts](preprocessing/)
+The dataset for Yelp and Amazon must be preprocessed and put to the `/data` folder. See instructions in the `preprocessing` folder.
 
 ### Input Data Format
 
@@ -155,4 +153,3 @@ MIT
 
 * **mltoolkit** provides the backbone functionality for data processing and modelling. Make sure it's visible to the interpreter.
 
-* We improved unsupervised data preprocessing, and thus the data statistics differ slightly from the ones mentioned in the paper.
