@@ -196,7 +196,7 @@ class IDevCopyCat(BaseIDev):
         dp_fp = os.path.join(dir_path, 'dp_vocabs.txt')
         safe_mkfdir(dp_fp)
         try:
-            with open(dp_fp, 'w') as f:
+            with open(dp_fp, 'w', encoding="utf-8") as f:
                 f.write(str(self.word_vocab))
                 f.write('===========================')
                 f.write(str(self.train_data_pipeline))
@@ -211,7 +211,7 @@ class IDevCopyCat(BaseIDev):
         # 3. model and its interface
         m_fp = os.path.join(dir_path, 'model.txt')
         try:
-            with open(m_fp, 'w') as f:
+            with open(m_fp, 'w', encoding="utf-8") as f:
                 f.write(str(self.imodel))
         except Exception:
             os.remove(m_fp)
